@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{pgfplots,xcolor,float}
+\usepgfplotslibrary{external}
+\tikzexternalize
+\pgfplotsset{compat=newest}
+
+\definecolor{sns-blue}{HTML}{4C72B0}
+\definecolor{sns-orange}{HTML}{DD8452}
+\definecolor{sns-green}{HTML}{55A868}
+\colorlet{lightergray}{lightgray!70}
+
+\begin{document}
+
+\begin{figure}[!ht]
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{loglogaxis}[
+                xlabel={Latency [ns]},
+                ylabel={CCDF},
+                grid=both,
+                major grid style={lightergray,thick},
+                minor grid style={densely dashed,lightergray,thick},
+                xmin=3e3,
+                xmax=3e6,
+                ymin=3e-5,
+                ymax=1.3,
+                width=.95\textwidth,
+                height=.65\textwidth,
+                axis line style={lightergray,thick},
+                legend style={opacity=0.8,
+                              draw=lightergray,
+                              thick},
+                legend cell align={left}
+                ]
+                \addplot[sns-blue,
+                         dashed,
+                         ultra thick,
+                         smooth,
+                         each nth point=10
+                         ] table[x={Latency (ns)},
+                                 y={ccdf},
+                                 col sep=comma
+                                 ] {../latency_cdf_robotic.csv};
+                \addlegendentry{Robotic};
+                \addplot[sns-orange,
+                         densely dashdotted,
+                         ultra thick,
+                         smooth,
+                         each nth point=10
+                         ] table[x={Latency (ns)},
+                                 y={ccdf},
+                                 col sep=comma
+                                 ] {../latency_cdf_audio.csv};
+                \addlegendentry{Audio};
+                \addplot[sns-green,
+                         dotted,
+                         ultra thick,
+                         smooth,
+                         each nth point=10
+                         ] table[x={Latency (ns)},
+                                 y={ccdf},
+                                 col sep=comma
+                                 ] {../latency_cdf_videoBBB.csv};
+                \addlegendentry{Video\,BBB};            
+            \end{loglogaxis}
+        \end{tikzpicture}
+    \end{center}
+\end{figure}
+
+\end{document}

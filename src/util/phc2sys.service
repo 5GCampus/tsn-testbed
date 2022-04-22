@@ -1,0 +1,10 @@
+[Unit]
+Description=Precision Time Protocol (PTP) service
+Documentation=man:ptp4l
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/phc2sys -ar
+
+[Install]
+WantedBy=multi-user.target

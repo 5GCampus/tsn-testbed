@@ -1,0 +1,19 @@
+# Device parameters:
+device="FibroLAN-FalconRX-NEW"
+remoteIP="10.0.0.4"
+path="successful_measurements/"
+qos="IEEE-802.1p"
+# other possible qos inputs:
+# No-QoS
+# IEEE-802.1p
+# TAS1
+# txinject-TAS1
+# txinject-TAS1-full
+
+# Measurement parameters:
+background_size=64
+background_delay=0
+background_traffic=100.0
+stream1="spotWASDspot.pcap"
+stream2="podcast.pcap"
+stream3="spotJPEGspot.pcap"
