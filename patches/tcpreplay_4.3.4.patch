@@ -1,0 +1,149 @@
+From 755eb299db8f3f4c8bd47b6de1418ab22cb79b0e Mon Sep 17 00:00:00 2001
+From: "Ulbricht, Marian" <ulbricht@innoroute.de>
+Date: Fri, 7 Jan 2022 18:38:06 +0100
+Subject: [PATCH] socketprio
+
+---
+ src/common/sendpacket.c | 18 +++++++++++++++---
+ src/tcpreplay_api.c     |  5 ++++-
+ src/tcpreplay_api.h     |  2 ++
+ src/tcpreplay_opts.def  | 12 ++++++++++++
+ 4 files changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/src/common/sendpacket.c b/src/common/sendpacket.c
+index f973b539..0b86b367 100644
+--- a/src/common/sendpacket.c
++++ b/src/common/sendpacket.c
+@@ -54,10 +54,12 @@
+ #include <sys/file.h>
+ #include <sys/socket.h>
+ 
++
+ #include "config.h"
+ #include "defines.h"
+ #include "common.h"
+ #include "sendpacket.h"
++#include "tcpreplay_api.h"
+ #ifdef FORCE_INJECT_TX_RING
+ /* TX_RING uses PF_PACKET API so don't undef it here */
+ #undef HAVE_LIBDNET
+@@ -148,7 +150,7 @@
+ #include "txring.h"
+ #endif
+ 
+-static sendpacket_t *sendpacket_open_pf(const char *, char *);
++static sendpacket_t *sendpacket_open_pf(const char *, char *,int);
+ static struct tcpr_ether_addr *sendpacket_get_hwaddr_pf(sendpacket_t *);
+ static int get_iface_index(int fd, const char *device, char *);
+ 
+@@ -473,6 +475,8 @@ sendpacket_t *
+ sendpacket_open(const char *device, char *errbuf, tcpr_dir_t direction,
+         sendpacket_type_t sendpacket_type _U_, void *arg _U_)
+ {
++tcpreplay_t *ctx;
++ctx=arg;
+ #ifdef HAVE_TUNTAP
+     char sys_dev_dir[128];
+     bool device_exists;
+@@ -535,7 +539,7 @@ sendpacket_open(const char *device, char *errbuf, tcpr_dir_t direction,
+         else
+ #endif
+ #if defined HAVE_PF_PACKET
+-            sp = sendpacket_open_pf(device, errbuf);
++            sp = sendpacket_open_pf(device, errbuf,ctx->options->sock_prio);
+ #elif defined HAVE_BPF
+             sp = sendpacket_open_bpf(device, errbuf);
+ #elif defined HAVE_LIBDNET
+@@ -876,7 +880,7 @@ sendpacket_open_tuntap(const char *device, char *errbuf)
+  * Inner sendpacket_open() method for using Linux's PF_PACKET or TX_RING
+  */
+ static sendpacket_t *
+-sendpacket_open_pf(const char *device, char *errbuf)
++sendpacket_open_pf(const char *device, char *errbuf,int sock_prio)
+ {
+     int mysocket;
+     sendpacket_t *sp;
+@@ -946,6 +950,14 @@ sendpacket_open_pf(const char *device, char *errbuf)
+                 strerror(errno));
+         return NULL;
+     }
++    int socket_priority=sock_prio;
++    if (setsockopt(mysocket, SOL_SOCKET, SO_PRIORITY, &socket_priority,sizeof(socket_priority))<0){
++
++        printf("Can't setsockopt SO_PRIORITY\n");
++        return NULL;
++    }else{
++    printf("Set SO_PRIORITY to %i\n",socket_priority);
++    }
+ 
+     /* make sure it's not loopback (PF_PACKET doesn't support it) */
+     if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER)
+diff --git a/src/tcpreplay_api.c b/src/tcpreplay_api.c
+index a9951a61..42bd63c6 100644
+--- a/src/tcpreplay_api.c
++++ b/src/tcpreplay_api.c
+@@ -166,7 +166,9 @@ tcpreplay_post_args(tcpreplay_t *ctx, int argc)
+ 
+     options->loop = OPT_VALUE_LOOP;
+     options->loopdelay_ms = OPT_VALUE_LOOPDELAY_MS;
+-
++    if (HAVE_OPT(SOCKPRIO))
++        options->sock_prio = OPT_VALUE_SOCKPRIO;
++        
+     if (HAVE_OPT(LIMIT))
+         options->limit_send = OPT_VALUE_LIMIT;
+ 
+@@ -370,6 +372,7 @@ tcpreplay_post_args(tcpreplay_t *ctx, int argc)
+         options->intf2_name = safe_strdup(intname);
+ 
+         /* open interface for writing */
++        ctx->options->sock_prio++;//prio of second interface +1
+         if ((ctx->intf2 = sendpacket_open(options->intf2_name, ebuf, TCPR_DIR_S2C, ctx->sp_type, ctx)) == NULL) {
+             tcpreplay_seterr(ctx, "Can't open %s: %s", options->intf2_name, ebuf);
+         }
+diff --git a/src/tcpreplay_api.h b/src/tcpreplay_api.h
+index 16102abb..81ef4b76 100644
+--- a/src/tcpreplay_api.h
++++ b/src/tcpreplay_api.h
+@@ -156,6 +156,8 @@ typedef struct tcpreplay_opt_s {
+ 
+     int unique_ip;
+     float unique_loops;
++    
++    int sock_prio;
+ } tcpreplay_opt_t;
+ 
+ 
+diff --git a/src/tcpreplay_opts.def b/src/tcpreplay_opts.def
+index 68f4f3b2..015d47ea 100644
+--- a/src/tcpreplay_opts.def
++++ b/src/tcpreplay_opts.def
+@@ -287,6 +287,8 @@ EOText;
+ };
+ 
+ 
++
++
+ flag = {
+     ifdef       = ENABLE_PCAP_FINDALLDEVS;
+     name        = listnics;
+@@ -318,6 +320,16 @@ flag = {
+     doc         = "";
+ };
+ 
++flag = {
++    name        = sockprio;
++    arg-type    = number;
++    arg-range   = "0->";
++    max         = 16;
++    descrip     = "sending socket priority, second interface will have +1";
++    arg-default = 0;
++    doc         = "";
++};
++
+ flag = {
+     name        = loopdelay-ms;
+     flags-must  = loop;
+-- 
+GitLab
+

@@ -76,10 +76,10 @@ ffprobe -v error -show_frames -select_streams v:0 -print_format json bbb_sunflow
 ## Other Repositories
 
 In order to make full use of the code, you should visit our other repositories with modified/patched software:
-* Intel igb driver
-* linuxPTP
-* Linux kernel
-* tcpreplay
+* see patches/ for modifications made to:
+	* linuxPTP
+	* Linux kernel (Intel igb driver)
+	* tcpreplay
 
 ## Thanks
 

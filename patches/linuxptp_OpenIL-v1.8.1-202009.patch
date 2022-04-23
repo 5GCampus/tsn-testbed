@@ -1,0 +1,26 @@
+diff --git a/makefile b/makefile
+index 45014e7..e795889 100644
+--- a/makefile
++++ b/makefile
+@@ -57,7 +57,7 @@ OBJECTS	+= snmp4lptp.o
+ snmplib	:= $(shell net-snmp-config --netsnmp-agent-libs)
+ endif
+ 
+-prefix	= /usr/local
++prefix= /usr
+ sbindir	= $(prefix)/sbin
+ mandir	= $(prefix)/man
+ man8dir	= $(mandir)/man8
+diff --git a/raw.c b/raw.c
+index 8dc50bc..3b8a21a 100644
+--- a/raw.c
++++ b/raw.c
+@@ -172,7 +172,7 @@ static int open_socket(const char *name, int event, unsigned char *ptp_dst_mac,
+ 		pr_err("bind failed: %m");
+ 		goto no_option;
+ 	}
+-	if (setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, name, strlen(name))) {
++int socket_priority=1;setsockopt(fd, SOL_SOCKET, SO_PRIORITY, &socket_priority,sizeof(socket_priority));if (setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, name, strlen(name))) {
+ 		pr_err("setsockopt SO_BINDTODEVICE failed: %m");
+ 		goto no_option;
+ 	}
