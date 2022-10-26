@@ -1,4 +1,4 @@
-# Update comming soon
+# TSN-FlexTes: Update comming soon
 We evolved the tesdbed structure and add more extensive tests to PTP, TAS and TA_prio with real world stream sets. The testbed will now called **TSN-FlexTest**
 
 
