@@ -1,3 +1,7 @@
+# Update comming soon
+We evolved the tesdbed structure and add more extensive tests to PTP, TAS and TA_prio with real world stream sets. The testbed will now called **TSN-FlexTest**
+
+
 # Flexible Measurement Testbed for Evaluating Time-Sensitive Networking
 
 The repository contains the code of a technical session paper at NetSoft2022.
