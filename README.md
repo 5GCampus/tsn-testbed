@@ -1,5 +1,17 @@
-# TSN-FlexTest: Update comming soon
-We evolved the tesdbed structure and add more extensive tests to PTP, TAS and TA_prio with real world stream sets. The testbed will now called **TSN-FlexTest**
+# Update: TSN-FlexTest
+
+The extended version of our testbed is published now on arxiv.org ([https://doi.org/10.48550/arXiv.2211.10413](https://doi.org/10.48550/arXiv.2211.10413)). Please use the following citation when referring to the testbed:
+
+```bibtex
+@misc{ulbricht2022tsnflextest,
+      title={TSN-FlexTest: Flexible TSN Measurement Testbed (Extended Version)}, 
+      author={Marian Ulbricht and Stefan Senk and Hosein K. Nazari and How-Hang Liu and Martin Reisslein and Giang T. Nguyen and Frank H. P. Fitzek},
+      year={2022},
+      eprint={2211.10413},
+      archivePrefix={arXiv},
+      primaryClass={cs.NI}
+}
+```
 
 
 # Flexible Measurement Testbed for Evaluating Time-Sensitive Networking
