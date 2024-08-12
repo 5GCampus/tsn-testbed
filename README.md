@@ -1,6 +1,39 @@
-# Update: TSN-FlexTest
+# TSN-FlexTest: Flexible TSN Measurement Testbed
 
-The extended version of our testbed is published now on arxiv.org ([https://doi.org/10.48550/arXiv.2211.10413](https://doi.org/10.48550/arXiv.2211.10413)). Please use the following citation when referring to the testbed:
+The repository contains the code of our technical session paper at NetSoft2022 and the corresponding article in IEEE Transactions on Network and Service Management.
+Furthermore, an extended version of our testbed is published on arxiv.org, see [10.48550/arXiv.2211.10413](https://doi.org/10.48550/arXiv.2211.10413).
+
+Additionally, we published our data sets on [ieee-dataport.org](ieee-dataport.org), see [10.21227/4eyw-n176](https://dx.doi.org/10.21227/4eyw-n176).
+
+## Citation
+
+If you use the code for other publications, please cite the authors:
+
+```bibtex
+@ARTICLE{10293177,
+  author={Ulbricht, Marian and Senk, Stefan and Nazari, Hosein K. and Liu, How-Hang and Reisslein, Martin and Nguyen, Giang T. and Fitzek, Frank H. P.},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={TSN-FlexTest: Flexible TSN Measurement Testbed}, 
+  year={2024},
+  volume={21},
+  number={2},
+  pages={1387-1402},
+  keywords={Hardware;Synchronization;Software;Mathematical analysis;Emulation;Standards;Protocols;Ethernet;industrial communication;Quality-of-Service;testbed;Time-Sensitive Networking},
+  doi={10.1109/TNSM.2023.3327108}}
+```
+
+```bibtex
+@INPROCEEDINGS{9844050,
+  author={Senk, Stefan and Ulbricht, Marian and Acevedo, Javier and Nguyen, Giang T. and Seeling, Patrick and Fitzek, Frank H. P.},
+  booktitle={2022 IEEE 8th International Conference on Network Softwarization (NetSoft)}, 
+  title={Flexible Measurement Testbed for Evaluating Time-Sensitive Networking in Industrial Automation Applications}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={402-410},
+  keywords={Performance evaluation;Automation;Turnkey project;Current measurement;Hardware;Behavioral sciences;Software measurement;Time-sensitive Networking;Quality of Service;Measurement;IEEE Standards;Testbed},
+  doi={10.1109/NetSoft54395.2022.9844050}}
+```
 
 ```bibtex
 @misc{ulbricht2022tsnflextest,
@@ -13,50 +46,7 @@ The extended version of our testbed is published now on arxiv.org ([https://doi.
 }
 ```
 
-
-# Flexible Measurement Testbed for Evaluating Time-Sensitive Networking
-
-The repository contains the code of a technical session paper at NetSoft2022.
-If you use the code for other publications, please cite the authors:
-
-```bibtex
-@INPROCEEDINGS{Senk2206:Flexible,
-AUTHOR="Stefan Senk and Marian Ulbricht and Javier Acevedo and Giang T. Nguyen and
-Patrick Seeling and Frank H.P. Fitzek",
-TITLE="Flexible Measurement Testbed for Evaluating {Time-Sensitive} Networking in
-Industrial Automation Applications",
-BOOKTITLE="2022 IEEE 8th International Conference on Network Softwarization (NetSoft)
-(NetSoft 2022)",
-ADDRESS="Milan, Italy",
-DAYS=26,
-MONTH=jun,
-YEAR=2022,
-KEYWORDS="Time-sensitive Networking; Quality of Service; Measurement; IEEE Standards;
-Testbed",
-ABSTRACT="Deterministic communications are required for industrial environments, yet
-their realization is a challenging task. Time-Sensitive Networking (TSN) is
-intended to enable deterministic communication over inexpensive Ethernet
-networks. Standardized by the IEEE TSN working group, TSN enables precise
-control of time synchronization, traffic shaping, reliability enhancements,
-and network administration to answer the demands of industrial control
-applications. Subsequently, there is a significant need to enable turnkey
-research and
-implementation efforts. However, a current lack of open-sourced testbed
-implementations to investigate and study the behavior of TSN network
-devices limits verification to simulation and theoretical models. We
-introduce a publicly available, flexible, and open-sourced measurement
-testbed for evaluating TSN in the context of industrial automation
-applications to address the need to perform real-world measurements. In
-this contribution, we describe our testbed combining
-Commercial-Off-The-Shelf (COTS) hardware and existing open-source tools as
-a platform for in-depth evaluation of TSN devices. Providing detailed TSN
-backgrounds, we describe an in-depth performance analysis for our
-implementation. For a common Tactile Internet scenario, we observe an
-accuracy of close to 5 ns achievable with our publicly available COTS
-setup."
-}
-```
-
+---
 The repository contains specifically:
 
 ## Code
@@ -66,6 +56,7 @@ The software is commonly know and was combined with scripts to aid the automated
 Some of the code was adjusted and extended in order to fit our needs or to add missing functionality.
 
 ### Start a Measurement
+
 * configure your nodes with ssh-key for passwordless login
 * make sure to install necessary software (linuxptp, tcpdump, tcpreplay, MoonGen, etc.)
 * copy and adjust [src/measurements/config.conf.example](src/measurements/config.conf.example) to `config.conf` in `src` directory
@@ -73,15 +64,18 @@ Some of the code was adjusted and extended in order to fit our needs or to add m
 * pcap will be captured from destination and stored at set location
 
 ### PCAP Generation
+
 * use the scripts in [src/pcap_writer](src/pcap_writer) to create your own measurement data
 * [pcap_writer.ipynb](src/pcap_writer/pcap_writer.ipynb) contains the most complete code
 * you can use, e.g., `ffprobe` to analyze existing multimedia files:
+
 ```shell
 ffprobe -v error -show_frames -select_streams a:0 -print_format json bbb_sunflower_1080p_60fps_normal.mp4 > bbb_audio_frames.json
 ffprobe -v error -show_frames -select_streams v:0 -print_format json bbb_sunflower_1080p_60fps_normal.mp4 > bbb_video_frames.json
 ```
 
 ### Data Evaluation
+
 * in [src/evaluation](src/evaluation) you can find several scripts to
   * parse your pcap file
   * generate statistics
@@ -92,12 +86,12 @@ ffprobe -v error -show_frames -select_streams v:0 -print_format json bbb_sunflow
 ## Other Repositories
 
 In order to make full use of the code, you should visit our other repositories with modified/patched software:
+
 * see patches/ for modifications made to:
-	* linuxPTP
-	* Linux kernel (Intel igb driver)
-	* tcpreplay
+ 	* linuxPTP
+ 	* Linux kernel (Intel igb driver)
+ 	* tcpreplay
 
-## Thanks
+## Acknowledgments
 
-We thank the original developers for their effort.
-Without them it would not be possible to us to do research.
+This work was funded by the German Research Foundation (DFG, Deutsche Forschungsgemeinschaft) as part of Germany’s Excellence Strategy - EXC 2050/1 - Project ID 390696704 - Cluster of Excellence “Centre for Tactile Internet with Human-in-the-Loop” (CeTI) of Technische Universität Dresden. We also would like to thank the open-source community for sharing their sophisticated work.
